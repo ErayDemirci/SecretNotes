@@ -19,30 +19,38 @@ icon_label = Label(root, image=icon, bg="lightgrey")
 icon_label.pack(pady=20)
 
 def encrypting():
-    t1 = secret_text.get("1.0", END).strip()
-    k1 = key_entry.get()
-
-    enc = onetimepad.encrypt(t1, k1)
-
-    if title_entry.get() == "" or key_entry.get() == "" or secret_text.get("1.0", END) == "":
+    if title_entry.get() == "" or key_entry.get() == "" or secret_text.get("1.0", END).strip() == "":
         messagebox.showwarning("Warning", "Please fill in all fields before encrypting or decrypting.")
     else:
+        t1 = secret_text.get("1.0", END).strip()
+        k1 = key_entry.get()
+
+        enc_text = onetimepad.encrypt(t1, k1)
+
         with open("mysecret.txt", "a") as f:
             f.write("Title: " + title_entry.get() + "\n")
-            f.write("Encrypted Text: " + enc + "\n")
+            f.write("Encrypted Text: " + enc_text + "\n")
             f.write("-" * 20 + "\n")
 
+        title_entry.delete(0, END)
+        key_entry.delete(0, END)
+        secret_text.delete("1.0", END)
+
 def decrypting():
-    if key_entry.get() == "" or secret_text.get("1.0", END) == "":
+    if key_entry.get() == "" or secret_text.get("1.0", END).strip() == "":
         messagebox.showwarning("Warning", "Please fill in all fields before encrypting or decrypting.")
+    else:
+        try:
+            t2 = secret_text.get("1.0", END).strip()
+            k2 = key_entry.get()
 
-    t2 = secret_text.get("1.0", END).strip()
-    k2 = key_entry.get()
+            dec = onetimepad.decrypt(t2, k2)
 
-    dec = onetimepad.decrypt(t2, k2)
-
-    secret_text.delete("1.0", END)
-    secret_text.insert("1.0", dec)
+            secret_text.delete("1.0", END)
+            secret_text.insert("1.0", dec)
+        except Exception as e:
+            print("ERROR: ", e)
+            messagebox.showwarning(title="Warning", message="Please enter encrypted text!")
 
 # title label
 title_label = Label(root, text="Enter Your Title", bg="lightgrey", fg="black")
